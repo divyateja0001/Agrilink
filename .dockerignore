@@ -1,0 +1,17 @@
+.git
+.venv
+.python313
+.pgdata
+.run
+logs
+test-results
+playwright-report
+frontend/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+backend/.env
+backend/instance/uploads
+**/__pycache__
+**/*.pyc
+*.exe

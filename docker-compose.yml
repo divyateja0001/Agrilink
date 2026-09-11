@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: agrilink
+      POSTGRES_USER: agrilink_app
+      POSTGRES_PASSWORD: local-docker-demo-change-me
+    ports: ["5432:5432"]
+    volumes: ["agrilink_pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrilink_app -d agrilink"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  agrilink_pgdata:

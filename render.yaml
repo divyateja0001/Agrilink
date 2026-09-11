@@ -1,0 +1,102 @@
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: agrilink-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: ./entrypoint.sh
+    healthCheckPath: /api/health
+    preDeployCommand: alembic upgrade head
+    initialDeployHook: python seed.py --seed-demo --confirm-demo-seed
+    maxShutdownDelaySeconds: 30
+    numInstances: 1
+    disk:
+      name: agrilink-uploads
+      mountPath: /var/data/agrilink/uploads
+      sizeGB: 1
+    envVars:
+      - key: AGRILINK_ENV
+        value: production
+      - key: AGRILINK_DATABASE_TARGET
+        value: supabase
+      - key: SUPABASE_DB_SCHEMA
+        value: agrilink
+      - key: SUPABASE_DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: SERVE_FRONTEND
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: STATIC_FOLDER
+        value: /app/frontend/dist
+      - key: UPLOAD_FOLDER
+        value: /var/data/agrilink/uploads
+      - key: DATABASE_POOL_SIZE
+        value: "3"
+      - key: DATABASE_MAX_OVERFLOW
+        value: "2"
+      - key: DATABASE_POOL_TIMEOUT
+        value: "10"
+      - key: DEMO_MODE
+        value: "true"
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: AI_ENABLED
+        value: "true"
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: MISTRAL_MODEL
+        value: mistral-small-latest
+      - key: PUSH_ENABLED
+        value: "true"
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+
+  - type: worker
+    name: agrilink-notification-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: python worker.py
+    maxShutdownDelaySeconds: 30
+    numInstances: 1
+    envVars:
+      - key: AGRILINK_ENV
+        value: production
+      - key: AGRILINK_DATABASE_TARGET
+        value: supabase
+      - key: SUPABASE_DB_SCHEMA
+        value: agrilink
+      - key: SUPABASE_DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: DATABASE_POOL_SIZE
+        value: "1"
+      - key: DATABASE_MAX_OVERFLOW
+        value: "1"
+      - key: DATABASE_POOL_TIMEOUT
+        value: "10"
+      - key: DEMO_MODE
+        value: "false"
+      - key: PUSH_ENABLED
+        value: "true"
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
