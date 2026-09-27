@@ -67,20 +67,18 @@ def create_app(config_overrides=None):
     def health():
         try:
             get_session().execute(text("SELECT 1"))
-        except SQLAlchemyError:
-            app.logger.warning("Database readiness check failed")
-            return jsonify(
-                status="unavailable",
-                service="agrilink-api",
-                database="unavailable",
-                target=app.config["DATABASE_TARGET"],
-            ), 503
+            db_status = "ok"
+            code = 200
+        except Exception as exc:
+            app.logger.warning("Database readiness check: %s", exc)
+            db_status = "unavailable"
+            code = 503
         return jsonify(
-            status="ok",
+            status="ok" if code == 200 else "unavailable",
             service="agrilink-api",
-            database="ok",
+            database=db_status,
             target=app.config["DATABASE_TARGET"],
-        )
+        ), code
 
     @app.get("/uploads/<path:filename>")
     def uploads(filename):
