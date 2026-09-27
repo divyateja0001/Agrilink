@@ -5,8 +5,8 @@ SQLAlchemy==2.0.43
 alembic==1.16.5
 psycopg[binary]==3.2.10
 python-dotenv==1.1.1
-pydantic==2.11.7
-mistralai==2.10.0
+pydantic>=2.10.0
+mistralai>=2.0.0
 pywebpush==2.5.0
 waitress==3.0.2
 gunicorn==23.0.0
